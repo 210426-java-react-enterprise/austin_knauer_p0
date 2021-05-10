@@ -8,6 +8,7 @@ import java.io.IOException;
 public class Welcome extends Screen{
 
     public Welcome(UserDAO userDAO, BufferedReader inputRead) {
+        super(userDAO, inputRead);
         this.name = "Welcome";
         this.route = "/welcome";
     }
@@ -27,6 +28,7 @@ public class Welcome extends Screen{
     }
 
     private boolean userOptions() {
+        // is doing this through a method a bad idea?
         System.out.println("> Student Login");
         System.out.println("> Faculty Login");
         System.out.println("> Register");

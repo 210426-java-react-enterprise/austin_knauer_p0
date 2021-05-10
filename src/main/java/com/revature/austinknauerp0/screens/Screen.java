@@ -11,10 +11,6 @@ public abstract class Screen {
     private UserDAO userDAO;
     protected BufferedReader inputRead;
 
-    public Screen() {
-        super();
-    }
-
    public Screen(UserDAO userDAO, BufferedReader inputRead) {
         this.userDAO = userDAO;
         this.inputRead = inputRead;
