@@ -34,7 +34,7 @@ public class AppState {
         return this.appUser;
     }
 
-    public AppUser setAppUserUsername(String username) {
+    public void setAppUserUsername(String username) {
         appUser.setUsername(username);
     }
 
