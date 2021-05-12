@@ -22,7 +22,35 @@ public class CourseDAO {
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
             String sql = role == "teacher" ? "select * from courses where teacher_id = (select teacher_id from teachers where user_id = ?)"
-            : "select * from courses where course_id = (select course_id from enrollments where user_id = ?";
+            : "select courses.course_id, name, description, teacher_id, credit_hours from courses inner join enrollments on courses.course_id = enrollments.course_id inner join students on enrollments.student_id = students.student_id and students.user_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+
+            ResultSet rs = pstmt.executeQuery();
+            int index = 0;
+            while(rs.next()) {
+                courses.add(new Course());
+                Course currentCourse = courses.get(index);
+                currentCourse.setName(rs.getString("name"));
+                currentCourse.setTeacherId(rs.getInt("teacher_id"));
+                currentCourse.setCourseId(rs.getInt("course_id"));
+                index++;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return courses;
+    }
+
+    public List<Course> selectUnregisteredCourses(int userId) {
+
+        List<Course> courses = new ArrayList<Course>();
+        // needs to be replaced with custom data structure
+
+        try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
+
+            String sql = "select * from courses except select courses.course_id, name, description, teacher_id, credit_hours from courses inner join enrollments on courses.course_id = enrollments.course_id inner join students on enrollments.student_id = students.student_id and students.user_id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
 
@@ -126,15 +154,15 @@ public class CourseDAO {
         return false;
     }
 
-    public boolean insertCourse(Course course) {
+    public boolean insertCourse(String name, String description, int credits, int userId) {
             try(Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
-                String sql = "insert into courses (course_id, name, description, teacher_id, credit_hours) values (default, ?, ?, ?, ?)";
+                String sql = "insert into courses (course_id, name, description, credit_hours, teacher_id) values (default, ?, ?, ?, (select teacher_id from teachers where user_id = ?))";
                 PreparedStatement pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, course.getName());
-                pstmt.setString(2, course.getDescription());
-                pstmt.setInt(3,  course.getTeacherId());
-                pstmt.setInt(4, course.getCredits());
+                pstmt.setString(1, name);
+                pstmt.setString(2, description);
+                pstmt.setInt(3,  credits);
+                pstmt.setInt(4, userId);
 
                 int insertedRecords = pstmt.executeUpdate();
                 if (insertedRecords != 0) {
@@ -147,5 +175,27 @@ public class CourseDAO {
 
             return false;
         }
+
+    public int selectUserCredits(int userId) {
+
+        int credits = 0;
+
+        try(Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
+
+            String sql = "select enrolled_credits from students where user_id = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, userId);
+
+            ResultSet rs = pstmt.executeQuery();
+            while(rs.next()) {
+                credits = rs.getInt("enrolled_credits");
+            }
+
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return credits;
+    }
 }
 

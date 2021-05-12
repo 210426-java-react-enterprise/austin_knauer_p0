@@ -94,7 +94,7 @@ public class PeopleDAO {
         return students;
     }
 
-    public List<Person> selectAllTeachers () {
+    public List<Person> selectAllTeachers() {
 
         List<Person> teachers = new ArrayList<>();
 
@@ -113,6 +113,29 @@ public class PeopleDAO {
             e.printStackTrace();
         }
         return teachers;
+    }
+
+    public Person selectTeacher(int teacherId) {
+
+        Person teacher = new Person();
+
+        try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
+
+            String sql = "select first_name, last_name from users where user_id = (select user_id from teachers where teacher_id = ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, teacherId);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                teacher.setFirstName(rs.getString("first_name"));
+                teacher.setLastName(rs.getString("last_name"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return teacher;
     }
 
 

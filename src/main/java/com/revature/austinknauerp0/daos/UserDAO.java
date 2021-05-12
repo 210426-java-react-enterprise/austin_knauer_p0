@@ -32,9 +32,10 @@ public class UserDAO {
         return true;
     }
 
-    public AppUser selectUserFromUsernameAndPassword(String username, String password) {
+    public String selectUserFromUsernameAndPassword(String username, String password) {
 
         AppState app = Driver.getApp();
+        String role = null;
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
@@ -45,6 +46,7 @@ public class UserDAO {
 
             ResultSet rs = pstmt.executeQuery();
             while(rs.next()) {
+                // bad practice to do this in the user dao?
                 app.setAppUserId(rs.getInt("user_id"));
                 app.setAppUserUsername(rs.getString("username"));
                 app.setAppUserPassword(rs.getString("password"));
@@ -52,11 +54,13 @@ public class UserDAO {
                 app.setAppUserFirstName(rs.getString("first_name"));
                 app.setAppUserLastName(rs.getString("last_name"));
                 app.setAppUserRole(rs.getString("role"));
+                role = rs.getString("role");
+                return role;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return app.getUserInfo();
+        return role;
     }
 
     public boolean insertNewUser(String username, String password, String firstName, String lastName, String email, String role) {

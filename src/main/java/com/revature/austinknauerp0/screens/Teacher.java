@@ -1,14 +1,20 @@
 package com.revature.austinknauerp0.screens;
 
+import com.revature.austinknauerp0.Driver;
+import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.daos.UserDAO;
+import com.revature.austinknauerp0.models.Course;
+import com.revature.austinknauerp0.util.AppState;
+import com.revature.austinknauerp0.util.ScreenRouter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.util.List;
 
 public class Teacher extends Screen {
 
-    public Teacher(UserDAO userDAO, BufferedReader inputRead) {
-        super(userDAO, inputRead);
+    public Teacher(CourseDAO courseDAO, BufferedReader inputRead, ScreenRouter router) {
+        super(courseDAO, inputRead, router);
         this.name = "Teacher";
         this.route = "/teacher";
     }
@@ -16,21 +22,25 @@ public class Teacher extends Screen {
     @Override
     public void render() {
 
-        // access teacher info for user
-        // may change to first name instead of username
-        String username = null;
+        AppState app = Driver.getApp();
+        // access student info for user
+        String username = app.getUserInfo().getUsername();
         // to be replaced by a custom data structure
-        String[] courses = new String[1];
+        List<Course> courses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "student");
 
         System.out.printf("Welcome %s!", username);
         System.out.println("Your courses:");
 
-        if (courses[0] == null) {
-            System.out.println("No courses found.");
+        if (courses.isEmpty()) {
+            System.out.println("No registered courses.");
         }
 
-        for(String course : courses) {
-            System.out.println(course);
+        int[] courseIds = new int[courses.size()];
+
+        for(int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            courseIds[i] = course.getCourseId();
+            System.out.printf("%s, %s", course.getCourseId(), course.getName());
         }
 
         System.out.println("Options:");
@@ -44,21 +54,38 @@ public class Teacher extends Screen {
             switch(inputRead.readLine()) {
                 case "1":
                     String navigateTo;
-                    System.out.println("Please enter the name of the course you wish to see more details of.");
+                    System.out.println("Please enter the course id you wish to see more details of.");
                     navigateTo = inputRead.readLine();
-                    // ensure that entered string is actually a course and navigate to details route with that class's info
+
+                    // an if statement inside a for loop inside a switch statement inside a try block? This is probably too messy, find another way.
+                    // Is there a way to stay on the dashboard instead of going back to welcome screen?/
+                    for (int i = 0; i < courseIds.length; i++) {
+                        if (courseIds[i] == Integer.parseInt(navigateTo)) {
+                            // need to make details route and inject the course info into it
+                            router.route("/details");
+                        } else if (i == courseIds.length - 1) {
+                            System.out.println("Invalid course.");
+                        }
+                    }
                     break;
                 case "2":
-                    // navigate to NewCourse screen
+                    router.route("/new-course");
                     break;
                 case "3":
-                    // navigate to Directory screen
+                    router.route("/directory");
                     break;
                 case "4":
-                    // navigate to Account screen
+                    router.route("/account");
                     break;
                 case "5":
-                    // navigate to login screen, remove user info
+                    // if this changes so that it stays on dashboard and doesn't go back to login this would have to reroute to login
+                    app.setAppUserFirstName("");
+                    app.setAppUserLastName("");
+                    app.setAppUserEmail("");
+                    app.setAppUserRole("");
+                    app.setAppUserUsername("");
+                    app.setAppUserPassword("");
+                    app.setAppUserId(-1);
                     break;
                 default:
                     System.out.println("Invalid Entry.");

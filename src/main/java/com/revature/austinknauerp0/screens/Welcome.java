@@ -1,14 +1,17 @@
 package com.revature.austinknauerp0.screens;
 
+import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.UserDAO;
+import com.revature.austinknauerp0.util.AppState;
+import com.revature.austinknauerp0.util.ScreenRouter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 
 public class Welcome extends Screen{
 
-    public Welcome(UserDAO userDAO, BufferedReader inputRead) {
-        super(userDAO, inputRead);
+    public Welcome(BufferedReader inputRead, ScreenRouter router) {
+        super(inputRead, router);
         this.name = "Welcome";
         this.route = "/welcome";
     }
@@ -22,28 +25,33 @@ public class Welcome extends Screen{
         boolean success = false;
 
         while(!success) {
-            this.userOptions();
+            success = this.userOptions();
         }
 
     }
 
     private boolean userOptions() {
+
+        AppState app = Driver.getApp();
+
         // is doing this through a method a bad idea?
-        System.out.println("> Student Login");
-        System.out.println("> Faculty Login");
-        System.out.println("> Register");
+        System.out.println("1) Student Login");
+        System.out.println("2) Faculty Login");
+        System.out.println("3) Register");
 
         System.out.print("Your choice:");
         try {
             switch(inputRead.readLine()) {
                 case "Student Login":
-                    // do something
+                    app.getUserInfo().setRole("student");
+                    router.route("/login");
                     break;
                 case "Faculty Login":
-                    // do something
+                    app.getUserInfo().setRole("teacher");
+                    router.route("/login");
                     break;
                 case "Register":
-                    // do something
+                    router.route("/register");
                     break;
                 default:
                     System.out.println("Input not recognized. Please try again.");
