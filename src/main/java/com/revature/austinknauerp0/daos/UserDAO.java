@@ -11,6 +11,27 @@ import java.sql.ResultSet;
 
 public class UserDAO {
 
+    public boolean selectUserFromX(String field, String value) {
+
+        try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
+
+            String sql = "select * from users where ? = ?";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, field);
+            pstmt.setString(2, value);
+            ResultSet rs = pstmt.executeQuery();
+
+            if(rs.next()) {
+                return false;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
     public AppUser selectUserFromUsernameAndPassword(String username, String password) {
 
         AppState app = Driver.getApp();
@@ -38,9 +59,7 @@ public class UserDAO {
         return app.getUserInfo();
     }
 
-    public int insertNewUser(String username, String password, String firstName, String lastName, String email, String role) {
-
-        int newUserId = -1;
+    public boolean insertNewUser(String username, String password, String firstName, String lastName, String email, String role) {
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
@@ -55,15 +74,12 @@ public class UserDAO {
             int insertedRows = pstmt.executeUpdate();
 
             if (insertedRows != 0) {
-                ResultSet rs = pstmt.getGeneratedKeys();
-                while(rs.next()) {
-                    newUserId = rs.getInt("user_id");
-                }
+                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return newUserId;
+        return false;
 
     }
 

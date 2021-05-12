@@ -10,7 +10,7 @@ public class UserService {
     private UserDAO userDAO;
     private static Pattern hasSpace = Pattern.compile("\\s+");;
     private static Pattern hasDigit = Pattern.compile("\\d+");;
-    private static Pattern hasCharacter = Pattern.compile("[!@#$%^&]+");;
+    private static Pattern hasCharacter = Pattern.compile("[!@#$%^]+");;
 
     public UserService(UserDAO u) {
         userDAO = u;
@@ -20,19 +20,23 @@ public class UserService {
     // use custom exceptions here?
 
     public boolean validateUsername(String username) {
-        if (!hasSpace.matcher(username).find() && 3 <= username.length() && username.length() <= 30) {
+        if (username != null && !hasSpace.matcher(username).find() && 3 <= username.length() && username.length() <= 30) {
             return true;
         } else {
             return false;
         }
     }
 
-    public void usernameAvailable(String username) {
+    public boolean usernameAvailable(String username) {
+        return userDAO.selectUserFromX("username", username);
+    }
 
+    public boolean emailAvailable(String email) {
+        return userDAO.selectUserFromX("email", email);
     }
 
     public boolean validatePassword(String password) {
-        if (!hasSpace.matcher(password).find() && hasDigit.matcher(password).find() && hasCharacter.matcher(password).find() && 6 <= password.length() && password.length() <= 30) {
+        if (password != null && !hasSpace.matcher(password).find() && hasDigit.matcher(password).find() && hasCharacter.matcher(password).find() && 6 <= password.length() && password.length() <= 30) {
             return true;
         } else {
             return false;
@@ -40,7 +44,7 @@ public class UserService {
     }
 
     public boolean validateName(String name) {
-        if(!hasSpace.matcher(name).find() && !hasDigit.matcher(name).find() && !hasCharacter.matcher(name).find() && 1 <= name.length() && name.length() <= 30) {
+        if(name != null && !hasSpace.matcher(name).find() && !hasDigit.matcher(name).find() && !hasCharacter.matcher(name).find() && 1 <= name.length() && name.length() <= 30) {
             return true;
         } else {
             return false;
@@ -49,14 +53,16 @@ public class UserService {
 
     public boolean validateEmail(String email) {
         // could use another regex to ensure email is in format xxx@xxx.xxx but that is beyond MVP
-        if(!hasSpace.matcher(email).find() && 6 <= email.length() && email.length() <= 100) {
+        if(email != null && !hasSpace.matcher(email).find() && 6 <= email.length() && email.length() <= 100) {
             return true;
         } else {
             return false;
         }
     }
 
-    public void validateUserAndSave(AppUser user) {
+    public boolean validateUserAndSave(String firstName, String lastName, String username, String password, String email, String role) {
+       // change name if nothing actually gets validated here
+        return userDAO.insertNewUser(firstName, lastName,username, password, email, role);
 
     }
 }
