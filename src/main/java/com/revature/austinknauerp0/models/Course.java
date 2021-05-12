@@ -4,14 +4,24 @@ public class Course {
 
     private String name;
     private String description;
-    private String credits;
-    private String teacher;
+    private int credits;
+    private int teacherId;
+    private int courseId;
 
-    public Course(String name, String description, String credits, String teacher) {
+    public Course() {
+        this.name = "";
+        this.description = "";
+        this.credits = 0;
+        this.teacherId = -1;
+        this.courseId = -1;
+    }
+
+    public Course(String name, String description, int credits, int teacherId, int courseId) {
         this.name = name;
         this.description = description;
         this.credits = credits;
-        this.teacher = teacher;
+        this.teacherId = teacherId;
+        this.courseId = courseId;
     }
 
     public String getName() {
@@ -30,19 +40,27 @@ public class Course {
         this.description = description;
     }
 
-    public String getCredits() {
+    public int getCredits() {
         return credits;
     }
 
-    public void setCredits(String credits) {
+    public void setCredits(int credits) {
         this.credits = credits;
     }
 
-    public String getTeacher() {
-        return teacher;
+    public int getTeacherId() {
+        return teacherId;
     }
 
-    public void setTeacher(String teacher) {
-        this.teacher = teacher;
+    public void setTeacherId(int teacherId) {
+        this.teacherId = teacherId;
+    }
+
+    public int getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(int courseId) {
+        this.courseId = courseId;
     }
 }

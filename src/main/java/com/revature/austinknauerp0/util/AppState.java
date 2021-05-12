@@ -75,4 +75,14 @@ public class AppState {
         appUser.setRole(role);
     }
 
+    public void setAppUserEmail(String email) {
+        appUser.setEmail(email);
+    }
+
+    public void setAppUserId(int id) {
+        appUser.setUserId(id);
+    }
+
+
+
 }
