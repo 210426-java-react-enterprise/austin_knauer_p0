@@ -44,7 +44,8 @@ public class Login extends Screen {
             System.out.println("Login unsuccessful.");
         } else {
             System.out.println("Login successful. Loading your dashboard.");
-            router.route("/" + role);
+            String newRoute = role == "teacher" ? "/teacher" : "/student";
+            router.route(newRoute);
         }
     }
 }

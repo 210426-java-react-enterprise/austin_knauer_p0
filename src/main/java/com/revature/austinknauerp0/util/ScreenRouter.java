@@ -16,7 +16,7 @@ public class ScreenRouter {
         for(int i = 0; i < screens.length; i++) {
             if (screens[i] == null) {
                 screens[i] = screen;
-                break;
+                i = screens.length;
             }
         }
 

@@ -13,7 +13,7 @@ public class UserDAO {
 
     public boolean selectUserFromX(String field, String value) {
 
-        try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
+        try(Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
             String sql = "select * from users where ? = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -55,7 +55,6 @@ public class UserDAO {
                 app.setAppUserLastName(rs.getString("last_name"));
                 app.setAppUserRole(rs.getString("role"));
                 role = rs.getString("role");
-                return role;
             }
         } catch (Exception e) {
             e.printStackTrace();

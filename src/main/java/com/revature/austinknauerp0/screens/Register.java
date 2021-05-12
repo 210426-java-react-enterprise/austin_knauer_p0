@@ -80,7 +80,7 @@ public class Register extends Screen {
                 String un = inputRead.readLine();
                 if (!userService.validateUsername(un)) {
                     System.out.println("Invalid entry. Usernames must not contain any spaces and must be between 3 and 30 characters.");
-                } else if (!userService.emailAvailable(un)) {
+                } else if (!userService.usernameAvailable(un)) {
                     System.out.println("Username unavailable. Please try another username.");
                 } else {
                     username = un;
@@ -120,7 +120,7 @@ public class Register extends Screen {
 
        // NEED TO ADD WAY TO EXIT OUT IN THE MIDDLE OF THIS PROCESS
         // consider how exceptions are handled more
-        boolean success = userService.validateUserAndSave(firstName, lastName, username, password, email, role);
+        boolean success = userService.validateUserAndSave(username, password, firstName, lastName, email, role);
         if (success) {
             System.out.println("Registration successful! Redirecting to welcome page.");
         } else {

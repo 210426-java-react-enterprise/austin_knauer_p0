@@ -37,7 +37,7 @@ public class JDBConnectionMaker {
         Connection conn = null;
 
         try {
-            DriverManager.getConnection(
+           conn = DriverManager.getConnection(
                     props.getProperty("url"),
                     props.getProperty("username"),
                     props.getProperty("password"));

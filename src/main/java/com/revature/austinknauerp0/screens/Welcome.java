@@ -42,15 +42,15 @@ public class Welcome extends Screen{
         System.out.print("Your choice:");
         try {
             switch(inputRead.readLine()) {
-                case "Student Login":
+                case "1":
                     app.getUserInfo().setRole("student");
                     router.route("/login");
                     break;
-                case "Faculty Login":
+                case "2":
                     app.getUserInfo().setRole("teacher");
                     router.route("/login");
                     break;
-                case "Register":
+                case "3":
                     router.route("/register");
                     break;
                 default:
