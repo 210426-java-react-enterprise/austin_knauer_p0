@@ -15,7 +15,7 @@ public class PeopleDAO {
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
-            String sql = "Insert into students (student_id, creditHours, user_id) values (default, 0, ?)";
+            String sql = "insert into students (student_id, creditHours, user_id) values (default, 0, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
 
@@ -34,7 +34,7 @@ public class PeopleDAO {
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
-            String sql = "Insert into teachers (student_id, user_id) values (default, ?)";
+            String sql = "insert into teachers (student_id, user_id) values (default, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, userId);
 
@@ -57,7 +57,7 @@ public class PeopleDAO {
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
-            String sql = "select (username, first_name, last_name) from users where user_id = (select user_id from students where student_id = (select student id from enrollments where course_id = ?))";
+            String sql = "select username, first_name, last_name from users inner join students on users.user_id = students.user_id inner join enrollments on students.student_id = enrollments.student_id and enrollments.course_id = 14";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, courseId);
 
