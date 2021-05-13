@@ -133,7 +133,7 @@ public class CourseDAO {
         return false;
     }
 
-    public boolean insertEnrollment(int courseId, int userId) {
+    public boolean insertEnrollment(int courseId, int userId, int newCredits) {
         try(Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
             String sql = "insert into enrollments (course_id, student_id) values (?, (select student_id from students where user_id = ?)";
@@ -143,7 +143,16 @@ public class CourseDAO {
 
             int insertedRecords = pstmt.executeUpdate();
             if (insertedRecords != 0) {
-                return true;
+                String sql2 = "update students set enrolled_credits = ? where user_id = ?";
+                PreparedStatement pstmt2 = conn.prepareStatement(sql2);
+                pstmt.setInt(1, newCredits);
+                pstmt.setInt(2, userId);
+
+                int updatedRecords = pstmt2.executeUpdate();
+                if (updatedRecords != 0) {
+                    return true;
+                }
+
             }
 
         } catch(Exception e) {

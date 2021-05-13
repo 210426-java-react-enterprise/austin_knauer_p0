@@ -13,7 +13,7 @@ public class Driver {
        AppState app = new AppState();
 
         while (app.getIsRunning()) {
-            app.getScreenRouter().route("/welcome");
+            app.getScreenRouter().getCurrentScreen().render();
         }
 
 

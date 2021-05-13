@@ -3,14 +3,10 @@ package com.revature.austinknauerp0.screens;
 import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.daos.PeopleDAO;
-import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
-import com.revature.austinknauerp0.util.structures.Stack;
-
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.revature.austinknauerp0.util.structures.ArrayList;
 
 public class Student extends Screen {
 
@@ -27,26 +23,20 @@ public class Student extends Screen {
         // access student info for user
         String username = app.getUserInfo().getUsername();
         // should this fetch the list from the DB every time the page is rendered?
-        Stack<Course> courses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "student");
+        ArrayList<Course> courses = app.getCourseList();
+        int[] courseIds = new int[courses.size()];
 
         System.out.printf("Welcome %s!", username);
         System.out.println("Your courses:");
 
-        if (courses.isEmpty()) {
+        if (app.getCourseList().size() == 0) {
             System.out.println("No registered courses.");
         }
 
-        int[] courseIds = new int[courses.size()];
-
-
-        try {
-            for (int i = 0; i < courses.size(); i++) {
-                Course course = courses.pop();
-                courseIds[i] = course.getCourseId();
-                System.out.printf("%s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (int i = 0; i < courses.size(); i++) {
+            Course course = courses.get(i);
+            courseIds[i] = course.getCourseId();
+            System.out.printf("%s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()));
         }
 
         System.out.println("Options:");
@@ -64,27 +54,38 @@ public class Student extends Screen {
 
         switch (selection) {
             case 1:
-                Integer navigateTo = null;
-                System.out.println("Please enter the course id you wish to see more details of.");
+                Integer chosenId = null;
+                Course chosenCourse = null;
+                System.out.println("Please enter the course id you wish to see more details for.");
 
-                while (navigateTo == null) {
-                    navigateTo = courseService.validateCourseIdEntry(courseIds);
+                while (chosenId == null) {
+                    chosenId = courseService.validateCourseIdEntry(courseIds);
                 }
 
-                // router.route(navigateTo);
+                for (int i = 0; i < courses.size(); i++) {
+                    if (courses.get(i).getCourseId() == chosenId) {
+                        chosenCourse = courses.get(i);
+                        break;
+                    }
+                }
+
+                app.setCurrentCourse(chosenCourse);
+                router.route("/details");
                 break;
+
             case 2:
-                // find a way to pass in currently enrolled courses?
                 router.route("/course-registration");
                 break;
+
             case 3:
                 router.route("/directory");
                 break;
+
             case 4:
                 router.route("/account");
                 break;
+
             case 5:
-                // if this changes so that it stays on dashboard and doesn't go back to login this would have to reroute to login
                 app.setAppUserFirstName("");
                 app.setAppUserLastName("");
                 app.setAppUserEmail("");
@@ -92,6 +93,9 @@ public class Student extends Screen {
                 app.setAppUserUsername("");
                 app.setAppUserPassword("");
                 app.setAppUserId(-1);
+                app.emptyCourseList();
+                app.setCurrentCourse(null);
+
             default:
                 router.route("/welcome");
         }

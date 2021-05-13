@@ -1,15 +1,10 @@
 package com.revature.austinknauerp0.screens;
 
 import com.revature.austinknauerp0.Driver;
-import com.revature.austinknauerp0.daos.UserDAO;
-import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
-public class Welcome extends Screen{
+public class Welcome extends Screen {
 
     public Welcome(ScreenRouter router) {
         super(router);

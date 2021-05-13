@@ -9,7 +9,7 @@ public class ArrayList<T> implements List<T>, Traversable<T>{
     public ArrayList() {
         this.container = (T[]) new Object[10];
         this.initial = 10;
-        this.size = 10;
+        this.size = 0;
     }
 
     public void add(T object) {
@@ -130,5 +130,10 @@ public class ArrayList<T> implements List<T>, Traversable<T>{
 
     public T get(int index) {
         return this.container[index];
+    }
+
+    public void empty() {
+        this.size = 0;
+        this.container = (T[]) new Object[10];
     }
 }

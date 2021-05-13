@@ -5,14 +5,12 @@ import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.AppUser;
 import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
-
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.revature.austinknauerp0.util.ScreenRouter;
 
 public class Account extends Screen {
 
-    public Account(UserDAO userDAO, UserService userService) {
-        super(userDAO, userService);
+    public Account(UserDAO userDAO, UserService userService, ScreenRouter router) {
+        super(userDAO, userService, router);
         this.name = "Account";
         this.route = "/account";
     }
@@ -22,6 +20,7 @@ public class Account extends Screen {
 
         AppState app = Driver.getApp();
         AppUser inf = app.getUserInfo();
+        String role = app.getUserInfo().getRole() == "teacher" ? "/teacher" : "/student";
 
 
         System.out.printf("Username: %s\nFirst Name: %s\nLast Name: %s\nEmail: %s\n", inf.getUsername(), inf.getFirstName(), inf.getLastName(), inf.getEmail());
@@ -52,11 +51,15 @@ public class Account extends Screen {
                 }
 
                 boolean success = userDAO.updateUser("first_name", newFirstName, app.getUserInfo().getUserId());
-                if (success)
+                if (success) {
                     System.out.println("First name updated successfully!");
+                    app.setAppUserFirstName(newFirstName);
+                    router.route(role);
+                }
                 else
                     System.out.println("Failed to update first name.");
 
+                // not ideal to change the user's first name from the entry here rather than from the database
                 break;
 
             case 2:
@@ -69,10 +72,14 @@ public class Account extends Screen {
                 }
 
                 boolean successLN = userDAO.updateUser("last_name", newLastName, app.getUserInfo().getUserId());
-                if (successLN)
+                if (successLN) {
                     System.out.println("Last name updated successfully!");
+                    app.setAppUserFirstName(newLastName);
+                }
                 else
                     System.out.println("Failed to update last name.");
+
+                router.route(role);
 
                 break;
 
@@ -88,9 +95,11 @@ public class Account extends Screen {
                     }
                 }
                 boolean successUN = userDAO.updateUser("username", newUsername, app.getUserInfo().getUserId());
-                if (successUN)
-                        System.out.println("Username updated successfully!");
-                else
+                if (successUN) {
+                    System.out.println("Username updated successfully!");
+                    app.setAppUserUsername(newUsername);
+                    router.route(role);
+                } else
                         System.out.println("Failed to update username.");
 
                 break;
@@ -105,9 +114,11 @@ public class Account extends Screen {
                 }
 
                 boolean successPW = userDAO.updateUser("password", newPassword, app.getUserInfo().getUserId());
-                if (successPW)
+                if (successPW) {
                     System.out.println("Password updated successfully!");
-                else
+                    app.setAppUserPassword(newPassword);
+                    router.route(role);
+                } else
                     System.out.println("Failed to update password.");
 
             break;
@@ -124,9 +135,11 @@ public class Account extends Screen {
                 }
 
                 boolean successE = userDAO.updateUser("email", newEmail, app.getUserInfo().getUserId());
-                if (successE)
+                if (successE) {
                     System.out.println("Email updated successfully!");
-                else
+                    app.setAppUserEmail(newEmail);
+                    router.route(role);
+                } else
                     System.out.println("Failed to update email.");
 
                 break;
@@ -151,6 +164,8 @@ public class Account extends Screen {
                         app.setAppUserUsername("");
                         app.setAppUserPassword("");
                         app.setAppUserId(-1);
+                        app.setCurrentCourse(null);
+                        app.emptyCourseList();
                     } else {
                         System.out.println("Delete unsuccessful.");
                     }
@@ -161,7 +176,7 @@ public class Account extends Screen {
                 break;
             default:
                 System.out.println("Invalid Entry.");
-                // route to whichever type of account accessed this
+
         }
     }
 

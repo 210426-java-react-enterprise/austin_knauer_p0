@@ -2,18 +2,16 @@ package com.revature.austinknauerp0.screens;
 
 import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.CourseDAO;
-import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.services.CourseService;
 import com.revature.austinknauerp0.util.AppState;
-
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.revature.austinknauerp0.util.ScreenRouter;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 public class NewCourse extends Screen {
 
-    public NewCourse(CourseDAO courseDAO, CourseService courseService) {
-        super(courseDAO, courseService);
+    public NewCourse(CourseDAO courseDAO, CourseService courseService, ScreenRouter router) {
+        super(courseDAO, courseService, router);
         this.name = "New Course";
         this.route = "/new-course";
     }
@@ -60,6 +58,14 @@ public class NewCourse extends Screen {
         boolean success = courseDAO.insertCourse(name, description, credits, app.getUserInfo().getUserId());
         if (success) {
             System.out.println("Course created successfully!");
+            Stack<Course> courses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "teacher");
+
+            try {
+                app.setCourseList(courses);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             System.out.println("Creation failed. Please try again later.");
         }

@@ -4,18 +4,18 @@ import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.daos.PeopleDAO;
 import com.revature.austinknauerp0.daos.UserDAO;
+import com.revature.austinknauerp0.models.AppUser;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.services.CourseService;
 import com.revature.austinknauerp0.util.AppState;
 
-import java.io.BufferedReader;
-import java.io.IOException;
+import com.revature.austinknauerp0.util.ScreenRouter;
 import com.revature.austinknauerp0.util.structures.Stack;
 
 public class CourseRegistration extends Screen {
 
-    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService) {
-        super(courseDAO, peopleDAO, courseService);
+    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, ScreenRouter router) {
+        super(courseDAO, peopleDAO, courseService, router);
         this.name = "Course Registration";
         this.route = "/course-registration";
     }
@@ -23,25 +23,29 @@ public class CourseRegistration extends Screen {
     @Override
     public void render() {
 
-        // access list of all available courses minus currently registered ones
-        Stack<Course> courses = new Stack<>();
+
         Integer toRegister = null;
         AppState app = Driver.getApp();
+        Stack<Course> courses = courseDAO.selectUnregisteredCourses(app.getUserInfo().getUserId());
+
+
 
         if (courses.isEmpty()) {
             System.out.println("No available courses.");
+            router.route("/student");
         } else {
             int[] courseIds = new int[courses.size()];
             int[] courseCredits = new int[courses.size()];
-            for (int i = 0; i < courses.size(); i++) {
-                try {
+            try {
+                for (int i = 0; i < courses.size(); i++) {
                     Course course = courses.pop();
                     courseIds[i] = course.getCourseId();
                     courseCredits[i] = course.getCredits();
                     System.out.printf("%s, %s, %s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()), course.getDescription(), course.getCredits());
-                } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             System.out.println("Options: ");
@@ -56,17 +60,43 @@ public class CourseRegistration extends Screen {
 
             if (selection == 1) {
                 System.out.print("Enter the id of the course you'd like to register for: ");
-                while (toRegister == null) {
-                    toRegister = courseService.validateCourseIdEntry(courseIds);
-                }
 
-                /* handle finding the associated course and seeing if user can register
-                else if (!courseService.canEnroll(credits, app.getUserInfo().getUserId()))
-                    System.out.println("Not enough credit hours to enroll.");
-                else
-                    courseDAO.insertEnrollment(Integer.parseInt(toRegister), app.getUserInfo().getUserId());
+               toRegister = courseService.validateCourseIdEntry(courseIds);
 
-                 */
+               if (toRegister == null) {
+
+                   router.route("/student");
+
+               } else {
+
+                   int index = 0;
+                   for (int i = 0; i < courseIds.length; i++) {
+                       if (courseIds[i] == toRegister) {
+                           index = i;
+                       }
+                   }
+
+                   int credits = courseCredits[index];
+                   int studCredits = courseDAO.selectUserCredits(app.getUserInfo().getUserId());
+                   if (!courseService.canEnroll(credits, app.getUserInfo().getUserId())) {
+                       System.out.println("Not enough credit hours.");
+                       router.route("/student");
+                   } else {
+                       if (courseDAO.insertEnrollment(toRegister, app.getUserInfo().getUserId(), credits + studCredits)) {
+                           System.out.println("Enrollmemnt successful!");
+
+                           Stack<Course> newCourses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "student");
+
+                           try {
+                               app.setCourseList(newCourses);
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+                       }
+
+                   }
+
+               }
 
             } else if (selection == 2) {
                 router.route("/student");

@@ -4,9 +4,12 @@ import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.daos.PeopleDAO;
 import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.AppUser;
+import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.screens.*;
 import com.revature.austinknauerp0.services.CourseService;
 import com.revature.austinknauerp0.services.UserService;
+import com.revature.austinknauerp0.util.structures.ArrayList;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -19,10 +22,13 @@ public class AppState {
     private final CourseDAO courseDAO;
     private final PeopleDAO peopleDAO;
     private AppUser appUser;
+    private Course currentCourse;
+    private ArrayList<Course> associatedCourses;
     private boolean isRunning;
     private ScreenRouter router;
     private UserService userService;
     private CourseService courseService;
+    private Welcome start;
     // still needs user service and screen router
 
     public AppState() {
@@ -39,17 +45,21 @@ public class AppState {
         courseService = new CourseService(courseDAO, inputRead);
 
         appUser = new AppUser();
-        router = new ScreenRouter();
+        currentCourse = new Course();
+        associatedCourses = new ArrayList<Course>();
 
-        router.add(new Welcome(router))
-                .add(new Register(userService))
-                .add(new Login(userDAO, router))
-                .add(new Account(userDAO, userService))
+        start = new Welcome(router);
+        router = new ScreenRouter(start);
+
+        router.add(start)
+                .add(new Register(userService, router))
+                .add(new Login(userDAO, courseDAO, router))
+                .add(new Account(userDAO, userService, router))
                 .add(new Student(courseDAO, peopleDAO, router))
                 .add(new Teacher(courseDAO, router))
-                .add(new NewCourse(courseDAO, courseService))
-                .add(new Directory(userService, peopleDAO))
-                .add(new CourseRegistration(courseDAO, peopleDAO, courseService));
+                .add(new NewCourse(courseDAO, courseService, router))
+                .add(new Directory(userService, peopleDAO, router))
+                .add(new CourseRegistration(courseDAO, peopleDAO, courseService, router));
         System.out.println("Application Ready!");
     }
 
@@ -67,6 +77,22 @@ public class AppState {
 
     public AppUser getUserInfo() {
         return this.appUser;
+    }
+
+    public Course getCurrentCourse() { return this.currentCourse; }
+
+    public void setCurrentCourse(Course course) { currentCourse = course; }
+
+    public ArrayList<Course> getCourseList() { return this.associatedCourses; }
+
+    public void setCourseList(Stack<Course> courses) throws Exception {
+        for (int i = 0; i < courses.size(); i++) {
+            this.associatedCourses.add(courses.pop());
+        }
+    }
+
+    public void emptyCourseList() {
+        this.associatedCourses.empty();
     }
 
     public void setAppUserUsername(String username) {

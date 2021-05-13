@@ -20,51 +20,22 @@ public abstract class Screen {
     protected UserService userService;
     protected ScreenRouter router;
 
-   public Screen(UserDAO userDAO) {
+    public Screen(UserService userService, ScreenRouter router) {
+        this.userService = userService;
+        this.router = router;
+    }
+
+    public Screen(UserDAO userDAO, CourseDAO courseDAO, ScreenRouter router) {
         this.userDAO = userDAO;
-   }
-
-    public Screen(PeopleDAO peopleDAO) {
-        this.peopleDAO = peopleDAO;
-    }
-
-    public Screen(ScreenRouter router) {
-       this.router = router;
-   }
-
-    public Screen(CourseDAO courseDAO) {
         this.courseDAO = courseDAO;
+        this.router = router;
     }
 
-    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService) {
-        this.courseDAO = courseDAO;
-        this.peopleDAO = peopleDAO;
-        this.courseService = courseService;
-    }
-
-    public Screen(CourseDAO courseDAO, CourseService courseService) {
-        this.courseDAO = courseDAO;
-        this.courseService = courseService;
-    }
-
-    public Screen(UserDAO userDAO, UserService userService) {
+    public Screen(UserDAO userDAO, UserService userService, ScreenRouter router) {
         this.userDAO = userDAO;
         this.userService = userService;
+        this.router = router;
     }
-
-    public Screen(UserService userService) {
-       this.userService = userService;
-   }
-
-   public Screen(UserDAO userDAO, ScreenRouter router) {
-       this.userDAO = userDAO;
-       this.router = router;
-   }
-
-   public Screen(CourseDAO courseDAO, ScreenRouter router) {
-       this.courseDAO = courseDAO;
-       this.router = router;
-   }
 
     public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, ScreenRouter router) {
         this.courseDAO = courseDAO;
@@ -72,9 +43,28 @@ public abstract class Screen {
         this.router = router;
     }
 
-    public Screen(UserService userService, PeopleDAO peopleDAO) {
+    public Screen(CourseDAO courseDAO, ScreenRouter router) {
+        this.courseDAO = courseDAO;
+        this.router = router;
+    }
+
+    public Screen(CourseDAO courseDAO, CourseService courseService, ScreenRouter router) {
+        this.courseDAO = courseDAO;
+        this.courseService = courseService;
+        this.router = router;
+    }
+
+    public Screen(UserService userService, PeopleDAO peopleDAO, ScreenRouter router) {
         this.peopleDAO = peopleDAO;
         this.userService = userService;
+        this.router = router;
+    }
+
+    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, ScreenRouter router) {
+        this.courseDAO = courseDAO;
+        this.peopleDAO = peopleDAO;
+        this.courseService = courseService;
+        this.router = router;
     }
 
     public abstract void render();
