@@ -7,6 +7,7 @@ import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.AppUser;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.services.CourseService;
+import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 
 import com.revature.austinknauerp0.util.ScreenRouter;
@@ -14,8 +15,8 @@ import com.revature.austinknauerp0.util.structures.Stack;
 
 public class CourseRegistration extends Screen {
 
-    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, ScreenRouter router) {
-        super(courseDAO, peopleDAO, courseService, router);
+    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, UserService userService, CourseService courseService, ScreenRouter router) {
+        super(courseDAO, peopleDAO, userService, courseService, router);
         this.name = "Course Registration";
         this.route = "/course-registration";
     }
@@ -41,7 +42,7 @@ public class CourseRegistration extends Screen {
                     Course course = courses.pop();
                     courseIds[i] = course.getCourseId();
                     courseCredits[i] = course.getCredits();
-                    System.out.printf("%s, %s, %s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()), course.getDescription(), course.getCredits());
+                    System.out.printf("%s, %s, %s, %s, %s \n", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()), course.getDescription(), course.getCredits());
 
                 }
             } catch (Exception e) {

@@ -135,16 +135,17 @@ public class UserService {
             e.printStackTrace();
         }
 
+
         if (entry.isEmpty() || entry == null) {
             System.out.println("Invalid entry. Please try again.");
             return null;
         }
 
         for (String option : options) {
-            if (entry == option)
+            if (entry.equals(option))
                 return Integer.parseInt(option);
-        }
 
+        }
         return null;
 
     }

@@ -3,6 +3,7 @@ package com.revature.austinknauerp0.screens;
 import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.models.Course;
+import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
 import com.revature.austinknauerp0.util.structures.ArrayList;
@@ -11,8 +12,8 @@ import com.revature.austinknauerp0.util.structures.Stack;
 
 public class Teacher extends Screen {
 
-    public Teacher(CourseDAO courseDAO, ScreenRouter router) {
-        super(courseDAO, router);
+    public Teacher(CourseDAO courseDAO, UserService userService, ScreenRouter router) {
+        super(courseDAO, userService, router);
         this.name = "Teacher";
         this.route = "/teacher";
     }

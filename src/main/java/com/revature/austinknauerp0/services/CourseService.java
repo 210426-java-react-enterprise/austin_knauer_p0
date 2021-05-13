@@ -127,7 +127,7 @@ public class CourseService {
         }
 
         for (String option : options) {
-            if (entry == option)
+            if (entry.equals(option))
                 return Integer.parseInt(option);
         }
 

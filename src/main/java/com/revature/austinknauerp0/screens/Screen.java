@@ -25,9 +25,10 @@ public abstract class Screen {
         this.router = router;
     }
 
-    public Screen(UserDAO userDAO, CourseDAO courseDAO, ScreenRouter router) {
+    public Screen(UserDAO userDAO, CourseDAO courseDAO, UserService userService, ScreenRouter router) {
         this.userDAO = userDAO;
         this.courseDAO = courseDAO;
+        this.userService = userService;
         this.router = router;
     }
 
@@ -37,14 +38,16 @@ public abstract class Screen {
         this.router = router;
     }
 
-    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, ScreenRouter router) {
+    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, UserService userService, ScreenRouter router) {
         this.courseDAO = courseDAO;
         this.peopleDAO = peopleDAO;
+        this.userService = userService;
         this.router = router;
     }
 
-    public Screen(CourseDAO courseDAO, ScreenRouter router) {
+    public Screen(CourseDAO courseDAO, UserService userService, ScreenRouter router) {
         this.courseDAO = courseDAO;
+        this.userService = userService;
         this.router = router;
     }
 
@@ -60,9 +63,10 @@ public abstract class Screen {
         this.router = router;
     }
 
-    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, ScreenRouter router) {
+    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, UserService userService, CourseService courseService, ScreenRouter router) {
         this.courseDAO = courseDAO;
         this.peopleDAO = peopleDAO;
+        this.userService = userService;
         this.courseService = courseService;
         this.router = router;
     }

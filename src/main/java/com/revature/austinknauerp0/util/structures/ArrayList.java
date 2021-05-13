@@ -3,12 +3,12 @@ package com.revature.austinknauerp0.util.structures;
 public class ArrayList<T> implements List<T>, Traversable<T>{
 
     private T[] container;
-    private int initial;
+    private int capacity;
     private int size;
 
     public ArrayList() {
         this.container = (T[]) new Object[10];
-        this.initial = 10;
+        this.capacity = 10;
         this.size = 0;
     }
 
@@ -17,9 +17,9 @@ public class ArrayList<T> implements List<T>, Traversable<T>{
         while(container[start] != null) {
             start++;
         }
-        if (start <= (this.size * .75)) {
+        if (start <= (this.capacity * .75)) {
             container[start] = object;
-        } else if (start < size) {
+        } else if (start < capacity) {
             container[start] = object;
             this.grow();
         } else {

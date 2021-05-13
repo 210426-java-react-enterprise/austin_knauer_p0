@@ -48,18 +48,18 @@ public class AppState {
         currentCourse = new Course();
         associatedCourses = new ArrayList<Course>();
 
-        start = new Welcome(router);
-        router = new ScreenRouter(start);
+        router = new ScreenRouter();
+        start = new Welcome(userService, router);
+        router.setStartingScreen(start);
 
-        router.add(start)
-                .add(new Register(userService, router))
-                .add(new Login(userDAO, courseDAO, router))
+        router.add(new Register(userService, router))
+                .add(new Login(userDAO, courseDAO, userService, router))
                 .add(new Account(userDAO, userService, router))
-                .add(new Student(courseDAO, peopleDAO, router))
-                .add(new Teacher(courseDAO, router))
+                .add(new Student(courseDAO, peopleDAO, userService,router))
+                .add(new Teacher(courseDAO, userService, router))
                 .add(new NewCourse(courseDAO, courseService, router))
                 .add(new Directory(userService, peopleDAO, router))
-                .add(new CourseRegistration(courseDAO, peopleDAO, courseService, router));
+                .add(new CourseRegistration(courseDAO, peopleDAO, userService, courseService, router));
         System.out.println("Application Ready!");
     }
 

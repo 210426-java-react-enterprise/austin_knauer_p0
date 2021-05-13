@@ -136,7 +136,7 @@ public class CourseDAO {
     public boolean insertEnrollment(int courseId, int userId, int newCredits) {
         try(Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
-            String sql = "insert into enrollments (course_id, student_id) values (?, (select student_id from students where user_id = ?)";
+            String sql = "insert into enrollments (course_id, student_id) values (?, (select student_id from students where user_id = ?))";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setInt(1, courseId);
             pstmt.setInt(2, userId);

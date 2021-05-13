@@ -4,14 +4,15 @@ import com.revature.austinknauerp0.Driver;
 import com.revature.austinknauerp0.daos.CourseDAO;
 import com.revature.austinknauerp0.daos.PeopleDAO;
 import com.revature.austinknauerp0.models.Course;
+import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
 import com.revature.austinknauerp0.util.structures.ArrayList;
 
 public class Student extends Screen {
 
-    public Student(CourseDAO courseDAO, PeopleDAO peopleDAO, ScreenRouter router) {
-        super(courseDAO, peopleDAO, router);
+    public Student(CourseDAO courseDAO, PeopleDAO peopleDAO, UserService userService, ScreenRouter router) {
+        super(courseDAO, peopleDAO, userService, router);
         this.name = "Student";
         this.route = "/student";
     }

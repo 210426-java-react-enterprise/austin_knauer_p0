@@ -10,15 +10,20 @@ public class ScreenRouter {
     private ArrayList<Screen> screens;
     private Screen currentScreen;
 
-    ScreenRouter(Screen start) {
+    ScreenRouter() {
         screens = new ArrayList<>();
-        currentScreen = start;
     }
 
     public ScreenRouter add(Screen screen) {
         screens.add(screen);
 
         return this;
+    }
+
+    public void setStartingScreen(Screen screen) {
+        if (currentScreen == null) {
+            currentScreen = screen;
+        }
     }
 
     public Screen getCurrentScreen() {

@@ -1,13 +1,14 @@
 package com.revature.austinknauerp0.screens;
 
 import com.revature.austinknauerp0.Driver;
+import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
 
 public class Welcome extends Screen {
 
-    public Welcome(ScreenRouter router) {
-        super(router);
+    public Welcome(UserService userService, ScreenRouter router) {
+        super(userService, router);
         this.name = "Welcome";
         this.route = "/welcome";
     }
