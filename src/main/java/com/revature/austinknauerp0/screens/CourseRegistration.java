@@ -14,8 +14,8 @@ import com.revature.austinknauerp0.util.structures.Stack;
 
 public class CourseRegistration extends Screen {
 
-    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, BufferedReader inputRead) {
-        super(courseDAO, peopleDAO, courseService, inputRead);
+    public CourseRegistration(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService) {
+        super(courseDAO, peopleDAO, courseService);
         this.name = "Course Registration";
         this.route = "/course-registration";
     }
@@ -25,7 +25,7 @@ public class CourseRegistration extends Screen {
 
         // access list of all available courses minus currently registered ones
         Stack<Course> courses = new Stack<>();
-        String toRegister;
+        Integer toRegister = null;
         AppState app = Driver.getApp();
 
         if (courses.isEmpty()) {
@@ -33,7 +33,7 @@ public class CourseRegistration extends Screen {
         } else {
             int[] courseIds = new int[courses.size()];
             int[] courseCredits = new int[courses.size()];
-            for(int i = 0; i < courses.size(); i++) {
+            for (int i = 0; i < courses.size(); i++) {
                 try {
                     Course course = courses.pop();
                     courseIds[i] = course.getCourseId();
@@ -48,34 +48,30 @@ public class CourseRegistration extends Screen {
             System.out.println("1) Register");
             System.out.println("2) Back to Dashboard");
 
-            try {
-                if (inputRead.readLine() == "1") {
-                    System.out.print("Enter the id of the course you'd like to register for: ");
-                    toRegister = inputRead.readLine();
+            Integer selection = null;
 
-                    boolean match = false;
-                    int credits = 0;
-                    for (int i = 0; i < courseIds.length; i++)
-                        if (courseIds[i] == Integer.parseInt(toRegister)) {
-                            match = true;
-                            credits = courseCredits[i];
-                    }
-
-                    if (!match)
-                        System.out.println("Invalid Course ID");
-                    else if (!courseService.canEnroll(credits, app.getUserInfo().getUserId()))
-                        System.out.println("Not enough credit hours to enroll.");
-                    else
-                        courseDAO.insertEnrollment(Integer.parseInt(toRegister), app.getUserInfo().getUserId());
-
-                } else if (inputRead.readLine() == "2") {
-                    return;
-                } else {
-                    System.out.println("Invalid Entry.");
-                }
-            } catch(IOException e) {
-                e.printStackTrace();
+            while (selection == null) {
+                selection = userService.validateOptionSelection("1", "2");
             }
+
+            if (selection == 1) {
+                System.out.print("Enter the id of the course you'd like to register for: ");
+                while (toRegister == null) {
+                    toRegister = courseService.validateCourseIdEntry(courseIds);
+                }
+
+                /* handle finding the associated course and seeing if user can register
+                else if (!courseService.canEnroll(credits, app.getUserInfo().getUserId()))
+                    System.out.println("Not enough credit hours to enroll.");
+                else
+                    courseDAO.insertEnrollment(Integer.parseInt(toRegister), app.getUserInfo().getUserId());
+
+                 */
+
+            } else if (selection == 2) {
+                router.route("/student");
+            }
+
         }
 
 

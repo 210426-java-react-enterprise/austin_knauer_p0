@@ -18,70 +18,63 @@ public abstract class Screen {
     protected PeopleDAO peopleDAO;
     protected CourseService courseService;
     protected UserService userService;
-    protected BufferedReader inputRead;
     protected ScreenRouter router;
 
-   public Screen(UserDAO userDAO, BufferedReader inputRead) {
+   public Screen(UserDAO userDAO) {
         this.userDAO = userDAO;
-        this.inputRead = inputRead;
    }
 
-    public Screen(PeopleDAO peopleDAO, BufferedReader inputRead) {
+    public Screen(PeopleDAO peopleDAO) {
         this.peopleDAO = peopleDAO;
-        this.inputRead = inputRead;
     }
 
-    public Screen(BufferedReader inputRead, ScreenRouter router) {
-       this.inputRead = inputRead;
+    public Screen(ScreenRouter router) {
        this.router = router;
    }
 
-    public Screen(CourseDAO courseDAO, BufferedReader inputRead) {
+    public Screen(CourseDAO courseDAO) {
         this.courseDAO = courseDAO;
-        this.inputRead = inputRead;
     }
 
-    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService, BufferedReader inputRead) {
+    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, CourseService courseService) {
         this.courseDAO = courseDAO;
         this.peopleDAO = peopleDAO;
         this.courseService = courseService;
-        this.inputRead = inputRead;
     }
 
-    public Screen(CourseDAO courseDAO, CourseService courseService, BufferedReader inputRead) {
+    public Screen(CourseDAO courseDAO, CourseService courseService) {
         this.courseDAO = courseDAO;
         this.courseService = courseService;
-        this.inputRead = inputRead;
     }
 
-    public Screen(UserDAO userDAO, UserService userService, BufferedReader inputRead) {
+    public Screen(UserDAO userDAO, UserService userService) {
         this.userDAO = userDAO;
         this.userService = userService;
-        this.inputRead = inputRead;
     }
 
-    public Screen(UserService userService, BufferedReader inputRead) {
+    public Screen(UserService userService) {
        this.userService = userService;
-       this.inputRead = inputRead;
    }
 
-   public Screen(UserDAO userDAO, BufferedReader inputRead, ScreenRouter router) {
+   public Screen(UserDAO userDAO, ScreenRouter router) {
        this.userDAO = userDAO;
-       this.inputRead = inputRead;
        this.router = router;
    }
 
-   public Screen(CourseDAO courseDAO, BufferedReader inputRead, ScreenRouter router) {
+   public Screen(CourseDAO courseDAO, ScreenRouter router) {
        this.courseDAO = courseDAO;
-       this.inputRead = inputRead;
        this.router = router;
    }
 
-    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, BufferedReader inputRead, ScreenRouter router) {
+    public Screen(CourseDAO courseDAO, PeopleDAO peopleDAO, ScreenRouter router) {
         this.courseDAO = courseDAO;
         this.peopleDAO = peopleDAO;
-        this.inputRead = inputRead;
         this.router = router;
+    }
+
+    public Screen(UserService userService, PeopleDAO peopleDAO) {
+        this.peopleDAO = peopleDAO;
+        this.userService = userService;
     }
 
     public abstract void render();

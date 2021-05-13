@@ -7,15 +7,15 @@ import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.List;
 
 public class Student extends Screen {
 
-    public Student(CourseDAO courseDAO, PeopleDAO peopleDAO, BufferedReader inputRead, ScreenRouter router) {
-        super(courseDAO, peopleDAO, inputRead, router);
+    public Student(CourseDAO courseDAO, PeopleDAO peopleDAO, ScreenRouter router) {
+        super(courseDAO, peopleDAO, router);
         this.name = "Student";
         this.route = "/student";
     }
@@ -26,8 +26,8 @@ public class Student extends Screen {
         AppState app = Driver.getApp();
         // access student info for user
         String username = app.getUserInfo().getUsername();
-        // to be replaced by a custom data structure
-        List<Course> courses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "student");
+        // should this fetch the list from the DB every time the page is rendered?
+        Stack<Course> courses = courseDAO.selectAssociatedCourses(app.getUserInfo().getUserId(), "student");
 
         System.out.printf("Welcome %s!", username);
         System.out.println("Your courses:");
@@ -38,10 +38,15 @@ public class Student extends Screen {
 
         int[] courseIds = new int[courses.size()];
 
-        for(int i = 0; i < courses.size(); i++) {
-            Course course = courses.get(i);
-            courseIds[i] = course.getCourseId();
-            System.out.printf("%s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()));
+
+        try {
+            for (int i = 0; i < courses.size(); i++) {
+                Course course = courses.pop();
+                courseIds[i] = course.getCourseId();
+                System.out.printf("%s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         System.out.println("Options:");
@@ -51,49 +56,44 @@ public class Student extends Screen {
         System.out.println("4) Account Info");
         System.out.println("5) Log Out");
 
-        try {
-            switch(inputRead.readLine()) {
-                case "1":
-                    String navigateTo;
-                    System.out.println("Please enter the course id you wish to see more details of.");
-                    navigateTo = inputRead.readLine();
+        Integer selection = null;
 
-                    // an if statement inside a for loop inside a switch statement inside a try block? This is probably too messy, find another way.
-                    // Is there a way to stay on the dashboard instead of going back to welcome screen?/
-                    for (int i = 0; i < courseIds.length; i++) {
-                        if (courseIds[i] == Integer.parseInt(navigateTo)) {
-                            // need to make details route and inject the course info into it
-                            router.route("/details");
-                        } else if (i == courseIds.length - 1) {
-                            System.out.println("Invalid course.");
-                        }
-                    }
-                    break;
-                case "2":
-                    // find a way to pass in currently enrolled courses?
-                    router.route("/course-registration");
-                    break;
-                case "3":
-                    router.route("/directory");
-                    break;
-                case "4":
-                    router.route("/account");
-                    break;
-                case "5":
-                    // if this changes so that it stays on dashboard and doesn't go back to login this would have to reroute to login
-                    app.setAppUserFirstName("");
-                    app.setAppUserLastName("");
-                    app.setAppUserEmail("");
-                    app.setAppUserRole("");
-                    app.setAppUserUsername("");
-                    app.setAppUserPassword("");
-                    app.setAppUserId(-1);
-                    break;
-                default:
-                    System.out.println("Invalid Entry.");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        while (selection == null) {
+            selection = userService.validateOptionSelection("1", "2", "3", "4", "5");
+        }
+
+        switch (selection) {
+            case 1:
+                Integer navigateTo = null;
+                System.out.println("Please enter the course id you wish to see more details of.");
+
+                while (navigateTo == null) {
+                    navigateTo = courseService.validateCourseIdEntry(courseIds);
+                }
+
+                // router.route(navigateTo);
+                break;
+            case 2:
+                // find a way to pass in currently enrolled courses?
+                router.route("/course-registration");
+                break;
+            case 3:
+                router.route("/directory");
+                break;
+            case 4:
+                router.route("/account");
+                break;
+            case 5:
+                // if this changes so that it stays on dashboard and doesn't go back to login this would have to reroute to login
+                app.setAppUserFirstName("");
+                app.setAppUserLastName("");
+                app.setAppUserEmail("");
+                app.setAppUserRole("");
+                app.setAppUserUsername("");
+                app.setAppUserPassword("");
+                app.setAppUserId(-1);
+            default:
+                router.route("/welcome");
         }
     }
 

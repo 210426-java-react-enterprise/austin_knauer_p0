@@ -11,8 +11,8 @@ import java.io.IOException;
 
 public class Account extends Screen {
 
-    public Account(UserDAO userDAO, UserService userService, BufferedReader inputRead) {
-        super(userDAO, userService, inputRead);
+    public Account(UserDAO userDAO, UserService userService) {
+        super(userDAO, userService);
         this.name = "Account";
         this.route = "/account";
     }
@@ -35,108 +35,133 @@ public class Account extends Screen {
         System.out.println("5) Change email.");
         System.out.println("6) Delete Account.");
 
-        try {
-            switch(inputRead.readLine()) {
-                case "1":
-                    System.out.print("New first name:");
-                    String newFirstName = inputRead.readLine();
-                    if(userService.validateName(newFirstName)) {
-                        boolean success = userDAO.updateUser("first_name", newFirstName, app.getUserInfo().getUserId());
-                        if (success)
-                            System.out.println("First name updated successfully!");
-                        else
-                            System.out.println("Failed to update first name.");
-                    } else {
-                        System.out.println("Invalid entry.");
-                    }
-                    break;
-                case "2":
-                    System.out.print("New last name:");
-                    String newLastName = inputRead.readLine();
-                    if(userService.validateName(newLastName)) {
-                        boolean success = userDAO.updateUser("last_name", newLastName, app.getUserInfo().getUserId());
-                        if (success)
-                            System.out.println("Last name updated successfully!");
-                        else
-                            System.out.println("Failed to update last name.");
-                    } else {
-                        System.out.println("Invalid entry.");
-                    }
-                    break;
-                case "3":
-                    System.out.print("New username:");
-                    String newUsername = inputRead.readLine();
-                    if(!userService.usernameAvailable(newUsername)) {
-                        System.out.println("Username unavailable.");
-                    } else if(userService.validateUsername(newUsername)) {
-                        boolean success = userDAO.updateUser("username", newUsername, app.getUserInfo().getUserId());
-                        if (success)
-                            System.out.println("Username updated successfully!");
-                        else
-                            System.out.println("Failed to update username.");
-                    } else {
-                        System.out.println("Invalid entry.");
-                    }
-                    break;
-                case "4":
-                    System.out.print("Old password:");
-                    String oldPassword = inputRead.readLine();
-                    System.out.print("New password:");
-                    String password = inputRead.readLine();
-                    if(oldPassword != app.getUserInfo().getPassword()) {
-                        System.out.println("Wrong password.");
-                    } else if (userService.validatePassword(password)) {
-                        boolean success = userDAO.updateUser("password", password, app.getUserInfo().getUserId());
-                        if (success)
-                            System.out.println("Password updated successfully!");
-                        else
-                            System.out.println("Failed to update password.");
-                    } else {
-                        System.out.println("Invalid entry.");
-                    }
-                    break;
-                case "5":
-                    System.out.print("New email:");
-                    String newEmail = inputRead.readLine();
-                    if(!userService.emailAvailable(newEmail)) {
-                        System.out.println("Email already associated with an account.");
-                    } else if (userService.validateEmail(newEmail)) {
-                        boolean success = userDAO.updateUser("email", newEmail, app.getUserInfo().getUserId());
-                        if (success)
-                            System.out.println("Email updated successfully!");
-                        else
-                            System.out.println("Failed to update email.");
-                    } else {
-                        System.out.println("Invalid entry.");
-                    }
-                    break;
-                case "6":
-                    System.out.println("Are you sure you want to delete this account? All course associations will be deleted.");
-                    System.out.print("Y/N");
-                    String answer = inputRead.readLine();
-                    if (answer == "Y") {
-                        boolean success = userDAO.deleteUser(app.getUserInfo().getUserId());
-                        if (success) {
-                            System.out.println("Sorry to see you go. Your account has been deleted.");
-                            app.setAppUserFirstName("");
-                            app.setAppUserLastName("");
-                            app.setAppUserEmail("");
-                            app.setAppUserRole("");
-                            app.setAppUserUsername("");
-                            app.setAppUserPassword("");
-                            app.setAppUserId(-1);
-                        } else {
-                            System.out.println("Delete unsuccessful.");
-                        }
+        Integer selection = null;
 
-                        // does it need to be rerouted to welcome or login screen manually?
+        while(selection == null) {
+            selection = userService.validateOptionSelection("1", "2", "3", "4", "5", "6");
+        }
+
+        switch(selection) {
+            case 1:
+
+                String newFirstName = null;
+
+                while (newFirstName == null) {
+                    System.out.print("New first name: ");
+                    newFirstName = userService.validateName();
+                }
+
+                boolean success = userDAO.updateUser("first_name", newFirstName, app.getUserInfo().getUserId());
+                if (success)
+                    System.out.println("First name updated successfully!");
+                else
+                    System.out.println("Failed to update first name.");
+
+                break;
+
+            case 2:
+
+                String newLastName = null;
+
+                while (newLastName == null) {
+                    System.out.print("New last name: ");
+                    newLastName = userService.validateName();
+                }
+
+                boolean successLN = userDAO.updateUser("last_name", newLastName, app.getUserInfo().getUserId());
+                if (successLN)
+                    System.out.println("Last name updated successfully!");
+                else
+                    System.out.println("Failed to update last name.");
+
+                break;
+
+            case 3:
+
+                String newUsername = null;
+
+                while(newUsername == null) {
+                    System.out.print("New username: ");
+                    newUsername = userService.validateUsername();
+                    if (newUsername != null) {
+                        newUsername = !userService.usernameAvailable(newUsername) ? null : newUsername;
                     }
-                    break;
-                default:
-                    System.out.println("Invalid Entry.");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+                }
+                boolean successUN = userDAO.updateUser("username", newUsername, app.getUserInfo().getUserId());
+                if (successUN)
+                        System.out.println("Username updated successfully!");
+                else
+                        System.out.println("Failed to update username.");
+
+                break;
+
+            case 4:
+
+                String newPassword = null;
+
+                while (newPassword == null) {
+                    System.out.print("New password: ");
+                    newPassword = userService.validatePassword();
+                }
+
+                boolean successPW = userDAO.updateUser("password", newPassword, app.getUserInfo().getUserId());
+                if (successPW)
+                    System.out.println("Password updated successfully!");
+                else
+                    System.out.println("Failed to update password.");
+
+            break;
+
+            case 5:
+                String newEmail = null;
+
+                while(newEmail == null) {
+                    System.out.print("New email: ");
+                    newEmail = userService.validateEmail();
+                    if (newEmail != null) {
+                        newEmail = !userService.emailAvailable(newEmail) ? null : newEmail;
+                    }
+                }
+
+                boolean successE = userDAO.updateUser("email", newEmail, app.getUserInfo().getUserId());
+                if (successE)
+                    System.out.println("Email updated successfully!");
+                else
+                    System.out.println("Failed to update email.");
+
+                break;
+
+            case 6:
+                Integer confirmDelete = null;
+
+                while (confirmDelete == null) {
+                    System.out.println("Are you sure you want to delete this account? All course associations will be deleted. Enter 1 to COnFIRM DELETE and 2 to CANCEL.");
+                    confirmDelete = userService.validateOptionSelection("1", "2");
+                }
+
+
+                if (confirmDelete == 1) {
+                    boolean successDel = userDAO.deleteUser(app.getUserInfo().getUserId());
+                    if (successDel) {
+                        System.out.println("Sorry to see you go. Your account has been deleted.");
+                        app.setAppUserFirstName("");
+                        app.setAppUserLastName("");
+                        app.setAppUserEmail("");
+                        app.setAppUserRole("");
+                        app.setAppUserUsername("");
+                        app.setAppUserPassword("");
+                        app.setAppUserId(-1);
+                    } else {
+                        System.out.println("Delete unsuccessful.");
+                    }
+
+                    router.route("/welcome");
+                    // does it need to be rerouted to welcome or login screen manually?
+                }
+                break;
+            default:
+                System.out.println("Invalid Entry.");
+                // route to whichever type of account accessed this
         }
     }
 

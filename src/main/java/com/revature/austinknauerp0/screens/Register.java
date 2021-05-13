@@ -3,13 +3,10 @@ package com.revature.austinknauerp0.screens;
 import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.services.UserService;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 public class Register extends Screen {
 
-    public Register(UserService userService, BufferedReader inputRead) {
-        super(userService, inputRead);
+    public Register(UserService userService) {
+        super(userService);
         this.name = "Register";
         this.route = "/register";
     }
@@ -30,96 +27,75 @@ public class Register extends Screen {
         System.out.println("1) Student");
         System.out.println("2) Teacher");
 
-        // is this while loop bad practice/could it lead to overflow?
+        Integer entry = null;
 
-        while (role == null) {
-            try {
-                switch(inputRead.readLine()) {
-                    case "1":
-                        role = "student";
-                        break;
-                    case "2":
-                        role = "teacher";
-                        break;
-                    default:
-                        role = null;
-
-                };
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        while (entry == null) {
+           entry = userService.validateOptionSelection("1", "2");
         }
 
-        try {
-
-            while(firstName == null) {
-                System.out.print("First Name: ");
-                String fn = inputRead.readLine();
-                if (userService.validateName(fn)) {
-                    firstName = fn;
-                } else {
-                    System.out.println("Invalid entry. Names can only contain letters A-Z and must be between 1 and 30 characters.");
-                }
-            }
-
-
-            while(lastName == null) {
-                System.out.print("Last Name: ");
-                String ln = inputRead.readLine();
-                if (userService.validateName(ln)) {
-                    lastName = ln;
-                } else {
-                    System.out.println("Invalid entry. Names can only contain letters A-Z and must be between 1 and 30 characters.");
-                }
-            }
-
-
-            while(username == null) {
-                System.out.print("Username: ");
-                String un = inputRead.readLine();
-                if (!userService.validateUsername(un)) {
-                    System.out.println("Invalid entry. Usernames must not contain any spaces and must be between 3 and 30 characters.");
-                } else if (!userService.usernameAvailable(un)) {
-                    System.out.println("Username unavailable. Please try another username.");
-                } else {
-                    username = un;
-                }
-            }
-
-            while(password == null) {
-                System.out.print("Password: ");
-                String pw = inputRead.readLine();
-                if (userService.validatePassword(pw)) {
-                    password = pw;
-                } else {
-                    System.out.println("Invalid entry. Passwords cannot contain white space, must be between 6 and 30 characters, and must contain one number and one special character (!@#$%^).");
-                }
-            }
-
-            while(email == null) {
-                System.out.print("Email: ");
-                String e = inputRead.readLine();
-                if (!userService.validateEmail(e)) {
-                    System.out.println("Invalid entry. Emails must contain no white space and be between 6 and 100 characters.");
-                } else if (!userService.emailAvailable(e)) {
-                    System.out.println("Email already associated with an account. Please try another email.");
-                } else {
-                    email = e;
-                }
-            }
-
-            if (role == "teacher") {
-                System.out.print("Access Key: ");
-                // handle access key
-            }
-
-        } catch(IOException e) {
-            e.printStackTrace();
+        switch (entry) {
+            case 1:
+                role = "student";
+                break;
+            case 2:
+                role = "teacher";
+                break;
+                // throw exception if for some reason it isn't one of those two?
         }
 
-       // NEED TO ADD WAY TO EXIT OUT IN THE MIDDLE OF THIS PROCESS
-        // consider how exceptions are handled more
+        while(firstName == null) {
+            System.out.print("First Name: ");
+            firstName = userService.validateName();
+        }
+
+        while(lastName == null) {
+            System.out.print("Last Name: ");
+            lastName = userService.validateName();
+        }
+
+        while(username == null) {
+            System.out.print("Username: ");
+            username = userService.validateUsername();
+            if (username != null) {
+                username = !userService.usernameAvailable(username) ? null : username;
+            }
+        }
+
+        while(password == null) {
+            System.out.print("Password: ");
+            password = userService.validatePassword();
+        }
+
+        while(email == null) {
+            System.out.print("Email: ");
+            email = userService.validateEmail();
+            if (email != null) {
+                email = !userService.emailAvailable(email) ? null : email;
+            }
+        }
+
+        while(firstName == null) {
+            System.out.print("First Name: ");
+            firstName = userService.validateName();
+        }
+
+        if (role == "teacher") {
+            System.out.print("Access Key: ");
+            // handle access key
+        }
+
+        Integer continueReg = null;
+
+        System.out.println("Confirm Registration? Enter 1 for YES or 2 to EXIT back to welcome screen");
+        while(continueReg == null) {
+            userService.validateOptionSelection("1", "2");
+        }
+
+        if (continueReg == 2) {
+            router.route("/welcome");
+        }
+
+       // NEED TO ADD BETTER WAY TO EXIT OUT IN THE MIDDLE OF THIS PROCESS
         boolean success = userService.validateUserAndSave(username, password, firstName, lastName, email, role);
         if (success) {
             System.out.println("Registration successful! Redirecting to welcome page.");

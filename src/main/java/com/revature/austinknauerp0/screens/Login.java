@@ -7,13 +7,10 @@ import com.revature.austinknauerp0.services.UserService;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.ScreenRouter;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-
 public class Login extends Screen {
 
-    public Login(UserDAO userDAO, BufferedReader inputRead, ScreenRouter router) {
-        super(userDAO, inputRead, router);
+    public Login(UserDAO userDAO, ScreenRouter router) {
+        super(userDAO, router);
         this.name = "Login";
         this.route = "/login";
     }
@@ -29,16 +26,16 @@ public class Login extends Screen {
 
         System.out.println("Enter your credentials to login.");
 
-        try {
-            System.out.print("Username: ");
-            username = inputRead.readLine();
-            System.out.println("Password: ");
-            password = inputRead.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+       while(username == null || password == null) {
+           System.out.print("Username: ");
+           username = userService.validateUsername();
+
+           System.out.println("Password: ");
+           password = userService.validatePassword();
+       }
 
         role = userDAO.selectUserFromUsernameAndPassword(username, password);
+
         if (role == null) {
             app.getUserInfo().setRole("");
             System.out.println("Login unsuccessful.");

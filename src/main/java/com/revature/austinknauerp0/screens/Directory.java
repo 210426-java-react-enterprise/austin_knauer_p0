@@ -3,16 +3,14 @@ package com.revature.austinknauerp0.screens;
 import com.revature.austinknauerp0.daos.PeopleDAO;
 import com.revature.austinknauerp0.daos.UserDAO;
 import com.revature.austinknauerp0.models.Person;
+import com.revature.austinknauerp0.services.UserService;
+import com.revature.austinknauerp0.util.structures.Stack;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Directory extends Screen {
 
-    public Directory(PeopleDAO peopleDAO, BufferedReader inputRead) {
-        super(peopleDAO, inputRead);
+    public Directory(UserService userService, PeopleDAO peopleDAO) {
+        super(userService, peopleDAO);
         this.name = "Directory";
         this.route = "/directory";
     }
@@ -24,22 +22,35 @@ public class Directory extends Screen {
         System.out.println("1) Students");
         System.out.println("2) Teachers");
 
+        Integer selection = null;
+
+        while (selection == null) {
+            selection = userService.validateOptionSelection("1", "2");
+        }
+
         try {
-            if (inputRead.readLine() == "1") {
-                List<Person> students = new ArrayList<>();
+            if (selection == 1) {
+                Stack<Person> students = new Stack<>();
                 System.out.println("Students:");
-                for (Person student : students)
+                for (int i = 0; i < students.size(); i++) {
+                    Person student = students.pop();
                     System.out.printf("%s %s, email: %s", student.getFirstName(), student.getLastName(), student.getEmail());
-            } else if (inputRead.readLine() == "2") {
-                List<Person> teachers = new ArrayList<>();
+                }
+            } else if (selection == 2) {
+                Stack<Person> teachers = new Stack<>();
                 System.out.println("Teachers:");
-                for (Person teacher : teachers)
+                for (int i = 0; i < teachers.size(); i++) {
+                    Person teacher = teachers.pop();
                     System.out.printf("%s %s, email: %s", teacher.getFirstName(), teacher.getLastName(), teacher.getEmail());
+                }
             } else {
-                System.out.println("Invalid Entry.");
+                System.out.println("Invalid entry.");
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // if using a stack might have to re-fetch list every time screen is rendered.
+
     }
 }

@@ -30,24 +30,26 @@ public class AppState {
         isRunning = true;
 
         inputRead = new BufferedReader(new InputStreamReader(System.in));
+
         userDAO = new UserDAO();
-        userService = new UserService(userDAO);
-        courseService = new CourseService();
         courseDAO = new CourseDAO();
         peopleDAO = new PeopleDAO();
+
+        userService = new UserService(userDAO, inputRead);
+        courseService = new CourseService(courseDAO, inputRead);
 
         appUser = new AppUser();
         router = new ScreenRouter();
 
-        router.add(new Welcome(inputRead, router))
-                .add(new Register(userService, inputRead))
-                .add(new Login(userDAO, inputRead, router))
-                .add(new Account(userDAO, userService, inputRead))
-                .add(new Student(courseDAO, peopleDAO, inputRead, router))
-                .add(new Teacher(courseDAO, inputRead, router))
-                .add(new NewCourse(courseDAO, courseService, inputRead))
-                .add(new Directory(peopleDAO, inputRead))
-                .add(new CourseRegistration(courseDAO, peopleDAO, courseService, inputRead));
+        router.add(new Welcome(router))
+                .add(new Register(userService))
+                .add(new Login(userDAO, router))
+                .add(new Account(userDAO, userService))
+                .add(new Student(courseDAO, peopleDAO, router))
+                .add(new Teacher(courseDAO, router))
+                .add(new NewCourse(courseDAO, courseService))
+                .add(new Directory(userService, peopleDAO))
+                .add(new CourseRegistration(courseDAO, peopleDAO, courseService));
         System.out.println("Application Ready!");
     }
 

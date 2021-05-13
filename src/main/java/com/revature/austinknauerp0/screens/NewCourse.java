@@ -12,8 +12,8 @@ import java.io.IOException;
 
 public class NewCourse extends Screen {
 
-    public NewCourse(CourseDAO courseDAO, CourseService courseService, BufferedReader inputRead) {
-        super(courseDAO, courseService, inputRead);
+    public NewCourse(CourseDAO courseDAO, CourseService courseService) {
+        super(courseDAO, courseService);
         this.name = "New Course";
         this.route = "/new-course";
     }
@@ -31,53 +31,39 @@ public class NewCourse extends Screen {
         System.out.println("Great, let's get your course set up. Please provide the following info.");
         // add a way to exit out back to dashboard
 
-        try {
-
-            while(name == null) {
-                System.out.print("Course Name: ");
-                String n = inputRead.readLine();
-                if (courseService.validateName(n)) {
-                    name = n;
-                } else {
-                    System.out.println("Invalid entry. Course name must be between 1 and 100 characters.");
-                }
-            }
-
-            while(description == null) {
-                System.out.print("Course Description: ");
-                String ds = inputRead.readLine();
-                if (courseService.validateDescription(ds)) {
-                    description = ds;
-                } else {
-                    System.out.println("Invalid entry. Descriptions must be less than 1000 characters.");
-                }
-            }
-
-            while(credits == null) {
-                System.out.print("Credit Hourrs: ");
-                        String ch = inputRead.readLine();
-                        if (courseService.validateCredits(Integer.parseInt(ch))) {
-                            credits = Integer.parseInt(ch);
-                        } else {
-                            System.out.println("Invalid entry. Courses can have a minimum of 1 and maximum of 8 credit hours.");
-                        }
-                    }
-
-            System.out.print("Create course? (Y/N): ");
-            String proceed = inputRead.readLine();
-            if (proceed == "Y" || proceed == "y") {
-                boolean success = courseDAO.insertCourse(name, description, credits, app.getUserInfo().getUserId());
-                if (success) {
-                    System.out.println("Course created successfully!");
-                }
-            }
-
-
-            // on y entered info needs to be validated then uploaded to database
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        while(name == null) {
+            System.out.print("Course Name: ");
+            name = courseService.validateName();
         }
 
+        while(description == null) {
+            System.out.print("Course Description: ");
+            description = courseService.validateDescription();
+        }
+
+        while(credits == null) {
+            System.out.print("Credit Hours: ");
+            credits = courseService.validateCredits();
+        }
+
+        Integer continueReg = null;
+
+        System.out.println("Confirm create? Enter 1 for YES or 2 to EXIT back to your dashboard.");
+        while(continueReg == null) {
+            courseService.validateOptionSelection("1", "2");
+        }
+
+        if (continueReg == 2) {
+            router.route("/teacher");
+        }
+
+        boolean success = courseDAO.insertCourse(name, description, credits, app.getUserInfo().getUserId());
+        if (success) {
+            System.out.println("Course created successfully!");
+        } else {
+            System.out.println("Creation failed. Please try again later.");
+        }
+
+        router.route("/teacher");
     }
 }
