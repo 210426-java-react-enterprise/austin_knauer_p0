@@ -10,8 +10,7 @@ import com.revature.austinknauerp0.util.AppState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 public class CourseRegistration extends Screen {
 
@@ -25,8 +24,7 @@ public class CourseRegistration extends Screen {
     public void render() {
 
         // access list of all available courses minus currently registered ones
-        // to be replaced by a custom data structure
-        List<Course> courses = new ArrayList<>();
+        Stack<Course> courses = new Stack<>();
         String toRegister;
         AppState app = Driver.getApp();
 
@@ -34,9 +32,16 @@ public class CourseRegistration extends Screen {
             System.out.println("No available courses.");
         } else {
             int[] courseIds = new int[courses.size()];
-            for(Course course : courses) {
-                // might need to format this better
-                System.out.printf("%s, %s, %s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()), course.getDescription(), course.getCredits());
+            int[] courseCredits = new int[courses.size()];
+            for(int i = 0; i < courses.size(); i++) {
+                try {
+                    Course course = courses.pop();
+                    courseIds[i] = course.getCourseId();
+                    courseCredits[i] = course.getCredits();
+                    System.out.printf("%s, %s, %s, %s, %s", course.getCourseId(), course.getName(), peopleDAO.selectTeacher(course.getTeacherId()), course.getDescription(), course.getCredits());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             System.out.println("Options: ");
@@ -53,7 +58,7 @@ public class CourseRegistration extends Screen {
                     for (int i = 0; i < courseIds.length; i++)
                         if (courseIds[i] == Integer.parseInt(toRegister)) {
                             match = true;
-                            credits = courses.get(i).getCredits();
+                            credits = courseCredits[i];
                     }
 
                     if (!match)

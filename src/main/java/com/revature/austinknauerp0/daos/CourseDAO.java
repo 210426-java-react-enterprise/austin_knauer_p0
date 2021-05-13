@@ -5,18 +5,17 @@ import com.revature.austinknauerp0.models.AppUser;
 import com.revature.austinknauerp0.models.Course;
 import com.revature.austinknauerp0.util.AppState;
 import com.revature.austinknauerp0.util.JDBConnectionMaker;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CourseDAO {
 
-    public List<Course> selectAssociatedCourses(int userId, String role) {
+    public Stack<Course> selectAssociatedCourses(int userId, String role) {
 
-        List<Course> courses = new ArrayList<Course>();
+        Stack<Course> courses = new Stack<>();
         // needs to be replaced with custom data structure
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
@@ -29,11 +28,11 @@ public class CourseDAO {
             ResultSet rs = pstmt.executeQuery();
             int index = 0;
             while(rs.next()) {
-                courses.add(new Course());
-                Course currentCourse = courses.get(index);
+                Course currentCourse = new Course();
                 currentCourse.setName(rs.getString("name"));
                 currentCourse.setTeacherId(rs.getInt("teacher_id"));
                 currentCourse.setCourseId(rs.getInt("course_id"));
+                courses.add(currentCourse);
                 index++;
             }
 
@@ -43,9 +42,9 @@ public class CourseDAO {
         return courses;
     }
 
-    public List<Course> selectUnregisteredCourses(int userId) {
+    public Stack<Course> selectUnregisteredCourses(int userId) {
 
-        List<Course> courses = new ArrayList<Course>();
+        Stack<Course> courses = new Stack<>();
         // needs to be replaced with custom data structure
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
@@ -57,11 +56,11 @@ public class CourseDAO {
             ResultSet rs = pstmt.executeQuery();
             int index = 0;
             while(rs.next()) {
-                courses.add(new Course());
-                Course currentCourse = courses.get(index);
+                Course currentCourse = new Course();
                 currentCourse.setName(rs.getString("name"));
                 currentCourse.setTeacherId(rs.getInt("teacher_id"));
                 currentCourse.setCourseId(rs.getInt("course_id"));
+                courses.add(currentCourse);
                 index++;
             }
 

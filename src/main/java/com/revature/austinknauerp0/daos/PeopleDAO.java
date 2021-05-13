@@ -2,12 +2,11 @@ package com.revature.austinknauerp0.daos;
 
 import com.revature.austinknauerp0.models.Person;
 import com.revature.austinknauerp0.util.JDBConnectionMaker;
+import com.revature.austinknauerp0.util.structures.Stack;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PeopleDAO {
 
@@ -51,9 +50,9 @@ public class PeopleDAO {
         return false;
     }
 
-    public List<Person> selectEnrolledStudents (int courseId) {
+    public Stack<Person> selectEnrolledStudents (int courseId) {
 
-        List<Person> students = new ArrayList<>();
+        Stack<Person> students = new Stack<>();
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
@@ -73,9 +72,9 @@ public class PeopleDAO {
         return students;
     }
 
-    public List<Person> selectAllStudents () {
+    public Stack<Person> selectAllStudents () {
 
-        List<Person> students = new ArrayList<>();
+        Stack<Person> students = new Stack<>();
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
@@ -94,9 +93,9 @@ public class PeopleDAO {
         return students;
     }
 
-    public List<Person> selectAllTeachers() {
+    public Stack<Person> selectAllTeachers() {
 
-        List<Person> teachers = new ArrayList<>();
+        Stack<Person> teachers = new Stack<>();
 
         try (Connection conn = JDBConnectionMaker.getInstance().getConnection()) {
 
